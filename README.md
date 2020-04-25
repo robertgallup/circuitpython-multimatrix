@@ -4,16 +4,24 @@ The MatrixN class in this CircuitPython module maps an NxM pixel grid onto one o
 
 The LED matrices are connected in a single chain in row-first order. I.e., a 16x16 pixel grid would be displayed on 2x2 LED grids. The first two LED grids would be the rows 1 to 8, the next two LED grids would be rows 9 to 16, and so on.
 
+
+## Dependencies:
+**adafruit_bus_device**  
+**adafruit_max7219**  
+**adafruit_framebuf**
+
+Copy those modules plus `ledmatrix.py` to the `lib` directory on your board.
+
 MatrixN has been tested on CircuitPython 5.2.0.
 
 ## Use:
-This module depends on the modules listed below. To use, copy those modules plus this one to the `lib` directory on your board. Then, use the following:
+In your python script, use:
 
 ```python
 from ledmatrix import MatrixN
 display = MatrixN(spi, cs, width, height)
 ```
-Review the included example script for a complete sample.
+SPI and the CS pin have to be set up in advance. Review the included example script for specifics.
 
 ## Class:
 ```python
