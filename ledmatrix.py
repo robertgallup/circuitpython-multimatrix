@@ -3,7 +3,8 @@ import math
 
 class MatrixN(max7219.MAX7219):
     """
-    Driver LED matrices based on the MAX7219 chip. Supports multi-matrix displays.
+    Driver for LED matrices based on the MAX7219 chip.
+    Supports multi-matrix displays.
     Automatically calculates number of 8x8 modules based on grid size
 
     :param object spi: an spi busio or spi bitbangio object
@@ -64,8 +65,8 @@ class MatrixN(max7219.MAX7219):
         for v in values: cmd_list += [cmd, v]
         # Set CS low and write the command list to the devices
         self._chip_select.value = 0
-        with self._spi_device as my_spi_device:
-            my_spi_device.write(bytearray(cmd_list))
+        with self._spi_device as spi:
+            spi.write(bytearray(cmd_list))
 
     def text(self, strg, xpos, ypos, color=1):
         """
