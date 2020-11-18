@@ -9,30 +9,31 @@ class MatrixN(max7219.MAX7219):
 
     :param object spi: an spi busio or spi bitbangio object
     :param ~digitalio.DigitalInOut cs: digital in/out to use as chip select signal
-    :param int width: pixel width of grid
-    :param int height: pixel height of grid
+    :param int width: pixel width of grid (default=8)
+    :param int height: pixel height of grid (default=8)
     """
-    
+
     # Register definitions
-    _DECODEMODE = const(9)
-    _SCANLIMIT = const(11)
-    _SHUTDOWN = const(12)
-    _DISPLAYTEST = const(15)
-    _DIGIT0 = const(1)
-    _INTENSITY = const(10)
+    _DECODEMODE 	= const(0b1001) #  9
+    _SCANLIMIT 		= const(0b1011) # 11
+    _SHUTDOWN 		= const(0b1100) # 12
+    _DISPLAYTEST 	= const(0b1111) # 15
+    _DIGIT0 		= const(0b0001) #  1
+    _INTENSITY 		= const(0b1010) # 10
 
     def __init__(self, spi, cs, width=8, height=8):
         # Number of 8x8 LED displays required is calculated as width/8 * height/8
         # ceil() is used to round both up to next whole matrix
         self._num_displays = math.ceil(width/8) * math.ceil(height / 8)
-        
+
         super().__init__(width, height, spi, cs)
 
     def init_display(self):
         """
         Initializes displays
-
         """
+
+		# Initialize important registers
         for cmd, data in (
             (_SHUTDOWN, 0),
             (_DISPLAYTEST, 0),
@@ -40,8 +41,7 @@ class MatrixN(max7219.MAX7219):
             (_DECODEMODE, 0),
             (_SHUTDOWN, 1),
         ):
-            value_list = [data] * self._num_displays
-            self.write_cmd(cmd, value_list)
+            self.write_cmd(cmd, [data] * self._num_displays)
 
     def brightness(self, value):
         """
@@ -49,8 +49,7 @@ class MatrixN(max7219.MAX7219):
 
         :param int value: 0->15 dimmest to brightest
         """
-        value_list = [value&0xFF] * self._num_displays
-        self.write_cmd(_INTENSITY, value_list)
+        self.write_cmd(_INTENSITY, [value&0xFF] * self._num_displays)
 
     def write_cmd(self, cmd, values):
         """
@@ -91,7 +90,7 @@ class MatrixN(max7219.MAX7219):
         """
         Updates all displays from the frame buffer
         """
-        # Each matrix takes 8 bytes (one per row). So, the same rows on 
+        # Each matrix takes 8 bytes (one per row). So, the same rows on
         # different matrices are 8 bytes apart in the frame buffer. But,
         # the rows must be output in reverse matrix order, i.e. data for
         # the last matrix in the chain is output first (just like a shift
@@ -99,4 +98,3 @@ class MatrixN(max7219.MAX7219):
         for ypos in range(8):
             values = [(self._buffer[ypos + (n*8)]) for n in range(self._num_displays-1, -1, -1)]
             self.write_cmd(_DIGIT0 + ypos, values)
-
