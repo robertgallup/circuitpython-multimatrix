@@ -13,7 +13,7 @@ clk = RX
 cs = digitalio.DigitalInOut(A1)
 spi = busio.SPI(clk, MOSI=mosi)
 
-display = MatrixN(spi, cs, WIDTH, HEIGHT, orientation=1)
+display = MatrixN(spi, cs, WIDTH, HEIGHT, orientation=0)
 
 # Fill columns right, left
 def wipe_pixels_vertical():
