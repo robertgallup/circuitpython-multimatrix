@@ -5,7 +5,7 @@ from board import TX, RX, A1
 
 from ledmatrix import MatrixN
 
-WIDTH = const(16)
+WIDTH = const(32)
 HEIGHT = const(8)
 
 mosi = TX
@@ -13,7 +13,7 @@ clk = RX
 cs = digitalio.DigitalInOut(A1)
 spi = busio.SPI(clk, MOSI=mosi)
 
-display = MatrixN(spi, cs, WIDTH, HEIGHT)
+display = MatrixN(spi, cs, WIDTH, HEIGHT, orientation=1)
 
 # Fill columns right, left
 def wipe_pixels_vertical():
@@ -21,11 +21,11 @@ def wipe_pixels_vertical():
     for x in range(WIDTH):
         for y in range(HEIGHT):
             display.pixel(x, y, 1)
-            display.show()
+        display.show()
     for x in range(WIDTH-1, -1, -1):
         for y in range(HEIGHT-1, -1, -1):
             display.pixel(x, y, 0)
-            display.show()
+        display.show()
 
 # Fill rows down, up
 def wipe_pixels_horizontal():
@@ -33,11 +33,11 @@ def wipe_pixels_horizontal():
     for y in range(HEIGHT):
         for x in range(WIDTH):
             display.pixel(x, y, 1)
-            display.show()
+        display.show()
     for y in range(HEIGHT-1, -1, -1):
         for x in range(WIDTH-1, -1, -1):
             display.pixel(x, y, 0)
-            display.show()
+        display.show()
 
 def scan_right():
     # one column of leds lit
@@ -58,7 +58,7 @@ def text():
         display.fill(0)
         display.text(s, pixel_position, 0)
         display.show()
-        pause(0.3)
+        pause(0.1)
 
 
 def pause(percent=1):

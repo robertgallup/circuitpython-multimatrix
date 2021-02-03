@@ -14,17 +14,19 @@ class MatrixN(max7219.MAX7219):
     """
 
     # Register definitions
-    _DECODEMODE 	= const(0b1001) #  9
-    _SCANLIMIT 		= const(0b1011) # 11
-    _SHUTDOWN 		= const(0b1100) # 12
-    _DISPLAYTEST 	= const(0b1111) # 15
-    _DIGIT0 		= const(0b0001) #  1
-    _INTENSITY 		= const(0b1010) # 10
+    _DECODEMODE     = const(0b1001) #  9
+    _SCANLIMIT      = const(0b1011) # 11
+    _SHUTDOWN       = const(0b1100) # 12
+    _DISPLAYTEST    = const(0b1111) # 15
+    _DIGIT0         = const(0b0001) #  1
+    _INTENSITY      = const(0b1010) # 10
 
-    def __init__(self, spi, cs, width=8, height=8):
+    def __init__(self, spi, cs, width=8, height=8, orientation=0):
         # Number of 8x8 LED displays required is calculated as width/8 * height/8
         # ceil() is used to round both up to next whole matrix
-        self._num_displays = math.ceil(width/8) * math.ceil(height / 8)
+        self._num_displays = math.ceil(width/8) * math.ceil(height/8)
+        # Display matrix orientation
+        self._orienation = orientation
 
         super().__init__(width, height, spi, cs)
 
@@ -32,8 +34,7 @@ class MatrixN(max7219.MAX7219):
         """
         Initializes displays
         """
-
-		# Initialize important registers
+        # Initialize important registers
         for cmd, data in (
             (_SHUTDOWN, 0),
             (_DISPLAYTEST, 0),
@@ -60,6 +61,7 @@ class MatrixN(max7219.MAX7219):
         :param list values: a list of values.
         """
         # Command list of alternating cmd and value pairs
+        # cmd_list = [[cmd, v] for v in values]
         cmd_list = []
         for v in values: cmd_list += [cmd, v]
         # Set CS low and write the command list to the devices
@@ -95,6 +97,25 @@ class MatrixN(max7219.MAX7219):
         # the rows must be output in reverse matrix order, i.e. data for
         # the last matrix in the chain is output first (just like a shift
         # register), then the next closest one, and so on.
-        for ypos in range(8):
-            values = [(self._buffer[ypos + (n*8)]) for n in range(self._num_displays-1, -1, -1)]
-            self.write_cmd(_DIGIT0 + ypos, values)
+        v = 0
+        values = bytearray(self._num_displays)
+        for y in range(8):
+
+            if self._orienation == 1:
+
+                d = self._num_displays
+                for display in range(self._num_displays):
+                    d -= 1
+                    for x in range(8):
+                        v = (v >> 1) | ((self._buffer[(d * 8) + x] << y) & 0b10000000)
+                    values[display] = v
+
+            else:
+                d = self._num_displays
+                for display in range(self._num_displays):
+                    d -= 1
+                    values[display] = self._buffer[y + (d * 8)]
+
+            self.write_cmd(_DIGIT0 + y, values)
+
+

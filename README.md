@@ -32,6 +32,7 @@ display = MatrixN(spi, cs, width, height)
 **cs**: DigitalInOut pin used for chip select  
 **width**: int pixel width of display  
 **height**: int pixel height of display  
+**orientation**: 0 or 1. "0" works with single matrix boards with connectors at the bottom. "1" rotates each data for each 8x8 matrix by 90 degrees (works with multi-matrix products commonly available with connectors on the left)  
 
 ## Methods:
 ```python
