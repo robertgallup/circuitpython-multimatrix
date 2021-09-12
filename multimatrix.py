@@ -1,7 +1,7 @@
 from adafruit_max7219 import max7219
 import math
 
-class MatrixN(max7219.MAX7219):
+class MultiMatrix(max7219.MAX7219):
     """
     Driver for LED matrices based on the MAX7219 chip.
     Supports multi-matrix displays.
