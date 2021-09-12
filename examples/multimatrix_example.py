@@ -3,7 +3,7 @@ import busio
 import digitalio
 from board import TX, RX, A1
 
-from ledmatrix import MatrixN
+from multimatrix import MultiMatrix
 
 WIDTH = const(32)
 HEIGHT = const(8)
@@ -13,7 +13,7 @@ clk = RX
 cs = digitalio.DigitalInOut(A1)
 spi = busio.SPI(clk, MOSI=mosi)
 
-display = MatrixN(spi, cs, WIDTH, HEIGHT, orientation=0)
+display = MultiMatrix (spi, cs, WIDTH, HEIGHT, orientation=0)
 
 # Fill columns right, left
 def wipe_pixels_vertical():
